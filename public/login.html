@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Кіру - Job Platform</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <h1>JobPlatform</h1>
+        <div>
+            <a href="index.html">Басты бет</a>
+            <a href="register.html">Тіркелу</a>
+        </div>
+    </nav>
+
+    <main>
+        <h2>Кіру</h2>
+        <form id="loginForm">
+            <label for="username">Пайдаланушы аты:</label>
+            <input type="text" id="username" required>
+
+            <label for="password">Құпия сөз:</label>
+            <input type="password" id="password" required>
+
+            <button type="submit">Кіру</button>
+        </form>
+        <p id="message"></p>
+    </main>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('loginForm');
+    const message = document.getElementById('message');
+
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                message.style.color = 'green';
+                message.textContent = `Сәтті кірді! Рөлі: ${data.role}`;
+
+                // Рөл бойынша бағыттау
+                if (data.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+
+            } else {
+                message.style.color = 'red';
+                message.textContent = data.message || 'Қате! Пайдаланушы аты немесе құпия сөз дұрыс емес';
+            }
+
+        } catch (err) {
+            message.style.color = 'red';
+            message.textContent = 'Сервермен байланыс қате';
+            console.error('Login error:', err);
+        }
+    });
+});
+</script>
+</body>
+</html>

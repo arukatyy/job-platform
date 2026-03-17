@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Резюме қосу</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <h1>JobPlatform</h1>
+        <div>
+            <a href="index.html">Басты бет</a>
+            <a href="login.html">Шығу</a>
+        </div>
+    </nav>
+
+    <main>
+        <h2>Резюме қосу</h2>
+        <form id="resumeForm">
+            <label>Толық аты:</label>
+            <input type="text" id="fullName" required>
+
+            <label>Лауазымы:</label>
+            <input type="text" id="position" required>
+
+            <label>Тәжірибе:</label>
+            <input type="text" id="experience" required>
+
+            <label>Қала:</label>
+            <input type="text" id="city" required>
+
+            <label>Телефон:</label>
+            <input type="text" id="phone" required>
+
+            <label>Email:</label>
+            <input type="email" id="email" required>
+
+            <input type="hidden" id="username" value="user1">
+
+            <button type="submit">Қосу</button>
+        </form>
+        <p id="message"></p>
+    </main>
+
+    <script src="script_resume.js"></script>
+</body>
+</html>

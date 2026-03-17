@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Тіркелу - Job Platform</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <h1>JobPlatform</h1>
+        <div>
+            <a href="index.html">Басты бет</a>
+            <a href="login.html">Кіру</a>
+        </div>
+    </nav>
+
+    <main>
+        <h2>Тіркелу</h2>
+        <form id="registerForm">
+            <label for="username">Пайдаланушы аты:</label>
+            <input type="text" id="username" required>
+
+            <label for="password">Құпия сөз:</label>
+            <input type="password" id="password" required>
+
+            <label for="role">Рөл:</label>
+            <select id="role">
+                <option value="user">Жұмыс іздеуші</option>
+                <option value="admin">Админ</option>
+            </select>
+
+            <button type="submit">Тіркелу</button>
+        </form>
+        <p id="message"></p>
+    </main>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registerForm');
+    const message = document.getElementById('message');
+
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const role = document.getElementById('role').value;
+
+        try {
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, role })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                message.style.color = 'green';
+                message.textContent = 'Тіркелу сәтті өтті! Енді кіріңіз.';
+                form.reset();
+            } else {
+                message.style.color = 'red';
+                message.textContent = data.message || 'Қате тіркелу!';
+            }
+
+        } catch (err) {
+            message.style.color = 'red';
+            message.textContent = 'Сервермен байланыс қате';
+            console.error('Register error:', err);
+        }
+    });
+});
+</script>
+</body>
+</html>

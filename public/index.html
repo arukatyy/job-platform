@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Platform</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <h1>JobPlatform</h1>
+        <div>
+            <a href="login.html">Кіру</a>
+            <a href="register.html">Тіркелу</a>
+            <a href="add_resume.html">Резюме қосу</a>
+        </div>
+    </nav>
+
+    <main>
+        <h2>Жұмыс іздеу</h2>
+
+        <select id="city">
+            <option value="">Барлық қалалар</option>
+            <option value="Астана">Астана</option>
+            <option value="Алматы">Алматы</option>
+            <option value="Шымкент">Шымкент</option>
+            <option value="Қарағанды">Қарағанды</option>
+        </select>
+
+        <button id="search">Іздеу</button>
+        <p id="jobsCount"></p>
+        <p id="message"></p>
+        <ul id="jobs"></ul>
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const jobsContainer = document.getElementById('jobs');
+        const message = document.getElementById('message');
+        const jobsCount = document.getElementById('jobsCount');
+        const searchBtn = document.getElementById('search');
+        const citySelect = document.getElementById('city');
+
+        const displayJobs = (jobs) => {
+            jobsContainer.innerHTML = '';
+            message.textContent = '';
+            jobsCount.textContent = `Табылған вакансия саны: ${jobs.length}`;
+
+            if (jobs.length === 0) {
+                jobsContainer.innerHTML = '<li>Жұмыс табылмады</li>';
+                return;
+            }
+
+            jobs.forEach(job => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <h3>${job.title}</h3>
+                    <p><strong>Компания:</strong> ${job.company || '-'}</p>
+                    <p><strong>Қала:</strong> ${job.city}</p>
+                    <p><strong>Жалақы:</strong> ${job.salary || '-'}</p>
+                    <p><strong>Тәжірибе:</strong> ${job.experience || '-'}</p>
+                    <p><strong>Жұмыс түрі:</strong> ${job.employment || '-'}</p>
+                    <p><strong>Кесте:</strong> ${job.schedule || '-'}</p>
+                    <p><strong>Міндеттері:</strong> ${job.responsibilities || '-'}</p>
+                    <p><strong>Талаптары:</strong> ${job.requirements || '-'}</p>
+                    <p><strong>Байланыс:</strong> ${job.contactphone || '-'}, ${job.contactemail || '-'}</p>
+                    <button class="deleteJobBtn" data-id="${job.id}">Жою</button>
+                `;
+                jobsContainer.appendChild(li);
+            });
+
+            // Жою батырмасын өңдеу
+            document.querySelectorAll('.deleteJobBtn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const jobId = btn.dataset.id;
+                    try {
+                        const res = await fetch(`http://localhost:3000/api/jobs/${jobId}`, { method: 'DELETE' });
+                        const result = await res.json();
+                        if (result.success) {
+                            message.style.color = 'green';
+                            message.textContent = 'Жұмыс жойылды';
+                            loadJobs(citySelect.value);
+                        } else {
+                            message.style.color = 'red';
+                            message.textContent = result.message || 'Қате! Жұмыс жойылмады';
+                        }
+                    } catch (err) {
+                        console.error('Delete job error:', err);
+                        message.style.color = 'red';
+                        message.textContent = 'Сервермен байланыс қате';
+                    }
+                });
+            });
+        };
+
+        const loadJobs = async (city = '') => {
+            let url = 'http://localhost:3000/api/jobs';
+            if (city) url += `?city=${encodeURIComponent(city)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                displayJobs(data);
+            } catch (err) {
+                console.error('Jobs fetch error:', err);
+                message.style.color = 'red';
+                message.textContent = 'Серверге қосыла алмай отырмыз';
+            }
+        };
+
+        loadJobs();
+
+        searchBtn.addEventListener('click', () => {
+            const city = citySelect.value;
+            loadJobs(city);
+        });
+    });
+    </script>
+</body>
+</html>
